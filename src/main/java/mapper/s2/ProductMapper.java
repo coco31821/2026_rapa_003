@@ -1,5 +1,8 @@
 package mapper.s2;
 
+import domain.Product;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,11 +16,11 @@ public interface ProductMapper {
 
     int save(Product product);
 
-    int updatePrice(Long id, int price);
+    int updatePrice(@Param("id") Long id,@Param("price") int price);
 
     int deleteById(Long id);
 
-    int decreaseStock(Long id, int amount);
+    int decreaseStock(@Param("id") Long id,@Param("quantity") int quantity);
 
 
 
