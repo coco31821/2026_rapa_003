@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.apache.ibatis.type.TypeAliasRegistry;
 
 public class HikariMyBatisConnector
         implements MyBatisSessionConnector{
@@ -16,7 +17,8 @@ public class HikariMyBatisConnector
     private final HikariDataSource dataSource;
 
     public HikariMyBatisConnector(
-            String mappersPackage
+            String mappersPackage,
+            String aliasPackage
     ) {
 
         HikariConfig config = new HikariConfig();
@@ -42,6 +44,9 @@ public class HikariMyBatisConnector
 
         configuration.setMapUnderscoreToCamelCase(true);
         configuration.addMappers(mappersPackage);
+
+        TypeAliasRegistry typeAliasRegistry = configuration.getTypeAliasRegistry();
+        typeAliasRegistry.registerAliases(aliasPackage);
 
         sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 
