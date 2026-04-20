@@ -91,6 +91,34 @@ public class MemberCrud {
 
         }
 
+        /*
+        try (SqlSession session = connector.openSession(true)) {
+
+            MemberMapper memberMapper = session.getMapper(MemberMapper.class);
+            
+            Long targetMemberId = 4L;
+
+            int affectedRow = memberMapper.deleteById(targetMemberId);
+
+            System.out.println("affectedRow = " + affectedRow);
+
+        }
+        */
+
+        try (SqlSession session = connector.openSession() ) {
+
+            MemberMapper memberMapper = session.getMapper(MemberMapper.class);
+
+            Long targetMemberId = 4L;
+
+            Optional<Member> memberOptional = memberMapper.findById(targetMemberId);
+            memberOptional.orElseThrow(() -> new NoSuchElementException("해당 회원은 존재하지 않습니다."));
+
+        } catch ( NoSuchElementException e ) {
+            System.out.println("!!! 예외 발생");
+            System.out.println(e.getMessage());
+        }
+
     }
 
 
