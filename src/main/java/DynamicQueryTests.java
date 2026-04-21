@@ -1,6 +1,7 @@
 import domain.Product;
 import domain.ProductSortType;
 import mapper.s3.S3ProductMapper;
+import mapper.s3.S3ProductMapperV2;
 import org.apache.ibatis.session.SqlSession;
 import util.HikariMyBatisConnector;
 import util.MyBatisSessionConnector;
@@ -29,7 +30,31 @@ public class DynamicQueryTests {
 //        test3();
 //        test4();
 //        test5();
-        test6();
+//        test6();
+        test7();
+    }
+
+    private static void test7() {
+
+        System.out.println("DynamicQueryTests.test7");
+
+        try (SqlSession session = connector.openSession()) {
+
+            S3ProductMapperV2 mapper = session.getMapper(S3ProductMapperV2.class);
+
+            Map<String, Object> params = new HashMap<>();
+
+            // Case1. 이름만 검색
+            params.put("name", "노트");
+            List<Product> products = mapper.search(params);
+
+            // 예상 실행 SQL
+            // SELECT id, name, price, stock WHERE 1 = 1 AND name LIKE '%노트%'
+            printResults(products);
+
+        }
+
+
     }
 
     /**
