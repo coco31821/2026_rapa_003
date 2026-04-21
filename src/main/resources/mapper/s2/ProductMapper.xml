@@ -46,7 +46,7 @@
             ( #{name}, #{price}, #{stock} )
     </insert>
 
-    <update id="update" parameterType="long">
+    <update id="update" parameterType="domain.Product">
         UPDATE product
         SET
             name = #{name},

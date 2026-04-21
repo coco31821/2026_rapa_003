@@ -16,12 +16,10 @@ public interface ProductMapper {
 
     int save(Product product);
 
-    int updatePrice(@Param("id") Long id,@Param("price") int price);
+    int update(Product product);
 
     int deleteById(Long id);
 
     int decreaseStock(@Param("id") Long id,@Param("quantity") int quantity);
-
-
 
 }

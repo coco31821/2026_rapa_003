@@ -1,4 +1,5 @@
 import domain.Product;
+import domain.ProductSortType;
 import mapper.s2.ProductMapper;
 import mapper.s2.ProductMapperV2;
 import org.apache.ibatis.session.SqlSession;
