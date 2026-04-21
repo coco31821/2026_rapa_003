@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.s4.OrderMapper">
+<!--    orderitems는 null로 들어갈 예정 -->
+
+    <resultMap id="orderWithMemberMap" type="domain.Order">
+
+        <!--  Order 자체 필드      -->
+        <id property="id" column="order_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="status" column="status"/>
+
+        <!--
+            연관관계에 있는 객체를 조회. 속성과 자바타임을 받는다.
+            자베에서 association에 가져오는 필드 이름 - java
+            멤버라는 변수에 어떤 타입으로 넣어줘서 만드는데? - javaType domain안의 멤버타입
+            m_name들을 조회해서 name에 할당하면 된다.
+        -->
+        <association property="member" javaType="domain.Member">
+            <id property="id" column="m_id"/>
+            <result property="name" column="m_name"/>
+            <result property="email" column="m_email"/>
+            <result property="balance" column="m_balance"/>
+        </association>
+
+
+    </resultMap>
+
+    <!-- 이 위를 활용해서 select 짜기 -->
+    <!-- resultmap 반환한다고 생각햅
+        alias 주는 이유 : column id를 위함.
+    -->
+    <select id="findByMemberId" parameterType="long" resultMap="orderWithMemberMap">
+        SELECT
+            o.id AS order_id,
+            o.member_id,
+            o.ordered_at,
+            o.status,
+            m.id AS m_id,
+            m.name AS m_name,
+            m.email AS m_email,
+            m.balance AS m_balance
+        FROM
+            orders o
+        JOIN
+            member m
+        ON
+            o.member_id = m.id
+        WHERE
+            m.id = #{id}
+    </select>
+
+
+    <select id="findAllInlineMapping"  resultMap="orderWithMemberMap">
+        SELECT
+            o.id AS order_id,
+            o.member_id,
+            o.ordered_at,
+            o.status,
+            m.id AS m_id,
+            m.name AS m_name,
+            m.email AS m_email,
+            m.balance AS m_balance
+        FROM
+            orders o
+        JOIN
+            member m
+        ON
+                o.member_id = m.id
+    </select>
+
+
+<!--
+       Nested Result Mapping
+       하나의 Join 쿼리 결과를 ResultMap안에서 매핑
+   -->
+
+    <resultMap id="orderNestedSelectMap" type="domain.Order">
+        <!--  Order 자체 필드      -->
+        <id property="id" column="order_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="status" column="status"/>
+
+        <!--  association 반복싫어
+            select에 지정해준 저 메서드를 호출해서 member_id(관련되어 있는 매핑정보)로 member 객체 생성
+        -->
+        <association property="member" select="mapper.s4.MemberMapper.findById" column="member_id"/>
+
+
+    </resultMap>
+
+    <select id="findAllWithMemberNestedSelect" resultMap="orderNestedSelectMap">
+        SELECT
+            id,
+            member_id,
+            ordered_at,
+            status
+        FROM
+            orders
+    </select>
+
+
+
+</mapper>
