@@ -72,9 +72,6 @@ public class Associationtests {
                 System.out.println("order_id = " + id);
                 System.out.println("name = " + name);
 
-
-
-
             }
 
 
