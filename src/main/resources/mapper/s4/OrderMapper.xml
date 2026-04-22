@@ -104,5 +104,107 @@
     </select>
 
 
+    <!-- 단일 객체인 Order말고 OrderItems를 받는 resultMap  // association => 단일 객체, 대신 collection 사용 // property : 자바 객체 매핑 -->
+    <resultMap id="orderWithItemsMap" type="domain.Order">
+        <id property="id" column="order_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="status" column="status"/>
+
+        <collection property="orderItems" ofType="domain.OrderItem">
+            <id     property="id"           column="item_id" />
+            <result property="orderId"      column="order_id"/>
+            <result property="productId"    column="product_id"/>
+            <result property="quantity"     column="quantity"/>
+            <result property="price"        column="item_price"/>
+        </collection>
+
+    </resultMap>
+
+    <!--
+        자바 객체로 반환 -> resultType
+        xml에서 지정한 타입 -> resultMap
+
+
+
+
+    -->
+    <select id="findAllWithItems" resultMap="orderWithItemsMap">
+        SELECT
+            o.id AS order_id,
+            o.member_id,
+            o.ordered_at,
+            o.status,
+            oi.id AS item_id,
+            oi.product_id,
+            oi.order_id,
+            oi.quantity,
+            oi.price AS item_price
+        FROM
+            orders o
+        JOIN
+            order_item oi
+        ON
+            o.id = oi.order_id
+    </select>
+
+
+    <resultMap id="orderFullMap" type="domain.Order">
+        <!--  Order 자체 필드      -->
+        <id property="id" column="order_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="orderedAt" column="ordered_at"/>
+        <result property="status" column="status"/>
+
+
+        <!-- Member 명세 -->
+        <association property="member" javaType="domain.Member">
+            <id property="id" column="m_id"/>
+            <result property="name" column="m_name"/>
+            <result property="email" column="m_email"/>
+            <result property="balance" column="m_balance"/>
+        </association>
+
+        <!--  orderItems 명세  -->
+        <collection property="orderItems" ofType="domain.OrderItem">
+            <id     property="id"           column="item_id" />
+            <result property="orderId"      column="oi_order_id"/>
+            <result property="productId"    column="product_id"/>
+            <result property="quantity"     column="quantity"/>
+            <result property="price"        column="item_price"/>
+
+            <association property="product" javaType="domain.Product">
+                <id property="id" column="p_id"/>
+                <result property="name" column="product_name"/>
+                <result property="price" column="product_price"/>
+                <result property="stock" column="product_stock"/>
+            </association>
+
+        </collection>
+    </resultMap>
+
+    <select id="findAllOrder" resultMap="orderFullMap">
+        SELECT o.id       AS order_id,
+               o.member_id,
+               o.ordered_at,
+               o.status,
+               m.id       AS m_id,
+               m.name     AS m_name,
+               m.email    AS m_email,
+               m.balance  AS m_balance,
+               oi.id      AS item_id,
+               oi.product_id,
+               oi.orderId AS oi_order_id,
+               oi.quantity,
+               oi.price   AS item_price,
+               p.id       AS p_id,
+               p.name     AS product_name,
+               p.price    AS product_price,
+               p.stock    AS product_stock
+        FROM order o
+                 JOIN member m ON o.member_id = m.id
+                 JOIN order_item oi ON o.id = oi.order_id
+                 JOIN product p ON oi.product_id = p.id
+    </select>
 
 </mapper>
